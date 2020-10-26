@@ -7,4 +7,7 @@ export class BoilerPlate extends React.Component<any, { query: QuadQuery }> {
     const query = new QuadQuery();
     this.state = { query };
   }
+  render(){
+      return null;
+  }
 }
