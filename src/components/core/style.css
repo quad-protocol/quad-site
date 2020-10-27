@@ -1,0 +1,11 @@
+.box {
+  width: 50%;
+  height: 50%;
+}
+.box-inner {
+  margin: 7%;
+  width: 86%;
+  height: 86%;
+  border: 6px double pink;
+  border-radius: 10px;
+}

@@ -1,0 +1,11 @@
+.button {
+  width: 90px;
+  height: 40px;
+  display: flex;
+  border: 6px double pink;
+  margin: auto;
+  position: relative;
+  bottom: -60%;
+  justify-content: center;
+  align-items: center;
+}

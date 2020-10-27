@@ -1,5 +1,13 @@
 .App {
   text-align: center;
+  background-color: #61dafb;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
 }
 
 .App-logo {
@@ -14,7 +22,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #61dafb;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -27,7 +35,7 @@
 .App-link {
   color: #61dafb;
 }
-.button-outer { 
+.button-outer {
   background-color: white;
   position: relative;
   box-shadow: inset 2px 2px 2px rgba(255, 255, 255, 1);
@@ -40,7 +48,7 @@
   align-items: center;
 }
 
-.button-inner { 
+.button-inner {
   border-style: outset;
   border-radius: 3px;
   box-shadow: outset 30px 30px 30px rgba(255, 255, 255, 1);
@@ -52,6 +60,23 @@
   height: calc(100% - 6px);
 }
 
+.wrap {
+  width: 800px;
+  height: 785px;
+  background-image: url(./images/processor.png);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.processor-riser {
+  width: 645px;
+  height: 645px;
+  background-image: url(./images/processor_riser.png);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 @keyframes App-logo-spin {
   from {

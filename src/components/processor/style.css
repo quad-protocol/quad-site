@@ -1,0 +1,24 @@
+.wrap {
+  width: 800px;
+  height: 785px;
+  background-image: url(../../images/processor.png);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.processor-riser {
+  width: 645px;
+  height: 645px;
+  background-image: url(../../images/processor_riser.png);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.box-wrap {
+  width: 90%;
+  height: 90%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
