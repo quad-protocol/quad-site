@@ -1,15 +1,19 @@
 import React from "react";
 import "./style.css";
 import { Button } from "../button";
-export class Core extends React.Component<any, any> {
-  constructor(props: any) {
+interface CoreProps {
+  open: () => void;
+}
+export class Core extends React.Component<any, CoreProps> {
+  constructor(props: CoreProps) {
     super(props);
   }
   render() {
+    const { open } = this.props;
     return (
       <div className="box">
         <div className="box-inner">
-          <Button></Button>
+          <Button click={open}></Button>
         </div>
       </div>
     );

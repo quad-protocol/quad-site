@@ -86,3 +86,8 @@
     transform: rotate(360deg);
   }
 }
+
+@font-face {
+  font-family: "Amiga";
+  src: local("Amiga"), url(./fonts/amiga4everpro2.ttf) format("truetype");
+}

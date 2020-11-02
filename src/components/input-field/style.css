@@ -1,0 +1,38 @@
+input {
+  text-align: left;
+  font-family: "Amiga";
+  border: 3px solid rgb(89, 71, 100);
+  background-color: transparent;
+  appearance: none;
+  outline: none;
+  color: white;
+  background-image: none;
+  background-color: transparent;
+  box-shadow: none;
+  width: 100%;
+  box-sizing: content-box;
+  height: 25px;
+  display: inline-block;
+}
+
+.placeholder {
+  width: 40%;
+  position: relative;
+  display: inline-block;
+}
+
+.placeholder::after {
+  color: white;
+  position: absolute;
+  right: 5px;
+  top: 8px;
+  content: attr(data-placeholder);
+  pointer-events: none;
+  font-size: 1rem;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

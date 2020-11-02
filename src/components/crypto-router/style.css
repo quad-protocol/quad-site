@@ -1,0 +1,74 @@
+.router-wrap {
+  font-family: "Amiga";
+  width: 90%;
+  height: 90%;
+  background-color: rgb(40, 27, 46);
+  color: rgb(237, 152, 150);
+  border-radius: 5px;
+  animation: createBox 0.25s;
+  overflow: scroll;
+  font-size: 1rem;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+}
+.header-text {
+  padding: 1rem;
+}
+.header-button {
+  padding: 1rem;
+}
+.max-button {
+  margin-left: 14px;
+  color: rgb(40, 27, 46);
+  background-color: rgb(89, 71, 100);
+  display: inline-block;
+  box-sizing: content-box;
+  width: 10%;
+  text-align: center;
+}
+.insert-coin {
+  font-size: 1rem;
+  margin: 1rem 4rem;
+  padding-top: 1rem;
+  border: 3px solid rgb(89, 71, 100);
+  margin-bottom: 3rem;
+  position: relative;
+}
+.section > * {
+  margin-bottom: 0.5rem;
+}
+.section {
+  padding-bottom: 1rem;
+}
+.subtext {
+  color: rgb(89, 71, 100);
+  padding-bottom: 2rem;
+}
+.swap {
+  color: rgb(40, 27, 46);
+  background-color: rgb(237, 152, 150);
+  text-align: center;
+  padding: 0.25rem 1rem;
+  display: block;
+  width: 100px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  position: absolute;
+}
+
+.balance {
+  color: white;
+  font-size: 1rem;
+  margin: 1rem 0 2rem 0;
+}
+
+@keyframes createBox {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
