@@ -5,6 +5,15 @@ import { useWeb3React } from "@web3-react/core";
 import { useMemo, useState } from "react";
 import { GenericLoadingHook } from "./reactUtils";
 
+//we have to use require instead of import because web3 uses an enum that is not assignable to our JSON ABI
+//the linter messes up a bit here
+const { abi: discoveryABI } = require("@quad/quad-linker/build/contracts/QuadAdmin.json"); // prettier-ignore
+const { abi: initialLGEABI } = require("@quad/quad-kernel/build/contracts/InitialQuadLGE.json"); // prettier-ignore
+const { abi: quadVaultABI } = require("@quad/quad-kernel/build/contracts/QuadVault.json"); // prettier-ignore
+const { abi: quadTokenABI } = require("@quad/quad-kernel/build/contracts/QuadToken.json"); // prettier-ignore
+const { abi: wlpABI } = require("@quad/quad-kernel/build/contracts/LPTokenWrapper.json"); // prettier-ignore
+const { abi: lpABI } = require("@quad/quad-kernel/build/contracts/UniswapV2Pair.json"); // prettier-ignore
+
 const discoveryAddress: string = "";
 
 export const ROLES = {
@@ -89,12 +98,10 @@ interface RoleState extends GenericLoadingHook<string[]> {
   role: string;
 }
 
-const discoveryABI = JSON.parse("");
-
 export const ABIS: { [x: string]: any } = {
-  [ROLES["LGE"]]: JSON.parse(""),
-  [ROLES["VAULT"]]: JSON.parse(""),
-  [ROLES["TOKEN"]]: JSON.parse(""),
-  [ROLES["WLP"]]: JSON.parse(""),
-  [ROLES["LP"]]: JSON.parse(""),
+  [ROLES["LGE"]]: initialLGEABI,
+  [ROLES["VAULT"]]: quadVaultABI,
+  [ROLES["TOKEN"]]: quadTokenABI,
+  [ROLES["WLP"]]: wlpABI,
+  [ROLES["LP"]]: lpABI,
 };
