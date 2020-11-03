@@ -3,7 +3,7 @@ import { Contract } from "web3-eth-contract";
 import { AbiItem } from "web3-utils";
 import { useWeb3React } from "@web3-react/core";
 import { useMemo, useState } from "react";
-import { GenericLoadingHook } from "./reactUtils";
+import { GenericLoadingHook } from "./interfaces";
 
 //we have to use require instead of import because web3 uses an enum that is not assignable to our JSON ABI
 //the linter messes up a bit here

@@ -3,118 +3,169 @@ import { TransactionReceipt } from "web3-core";
 import { Contract } from "web3-eth-contract";
 import { useWeb3React } from "@web3-react/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ROLES, useRole, useSingletonRole, ABIS } from "./quadResolver";
-import { GenericLoadingHook, usePeriodicCall } from "./reactUtils";
+import {
+  ROLES,
+  useRole,
+  useSingletonRole,
+  ABIS,
+  useContract,
+} from "./quadResolver";
+import { GenericLoadingHook } from "./interfaces";
 import BN from "bn.js";
 
 const TOKEN_ROLE = ROLES["TOKEN"];
 const WLP_ROLE = ROLES["WLP"];
 const LP_ROLE = ROLES["LP"];
 
-export const useFetchWLPByName = (
-  name: string
-): GenericLoadingHook<Contract> => {
-  const { loading, data: contracts } = useRole(WLP_ROLE);
+export const useFetchWLPAddresses = (): GenericLoadingHook<string[]> => {
+  const { loading, data } = useRole(WLP_ROLE);
 
-  const [state, setState] = useState<NamedFetchHook>({
-    name: name,
+  if (loading || !data) return { loading: true, data: null };
+
+  return { loading: false, data: data.map((c) => c.options.address) };
+};
+
+export const useFetchTokenName = (
+  address: string | null
+): GenericLoadingHook<string> => {
+  const contract = useContract(address, ABIS[TOKEN_ROLE]);
+  const [state, setState] = useState<AddressFetchHook>({
     loading: true,
     data: null,
+    account: address,
   });
 
   useEffect(() => {
-    if (!loading && contracts) {
-      const findName = async () => {
-        for (const contract of contracts) {
-          const n = await contract.methods.name();
+    if (!address || !contract) return;
 
-          if (n === name) return contract;
-        }
-        return null;
-      };
-      findName().then((contract) =>
+    contract.methods
+      .name()
+      .call()
+      .then((name: string) => {
         setState({
-          name: name,
           loading: false,
-          data: contract,
-        })
-      );
-    }
-  }, [name, loading, contracts]);
+          data: name,
+          account: address,
+        });
+      });
+  }, [contract, address]);
 
   return { loading: state.loading, data: state.data };
 };
 
-export const useFetchLPByWLPName = (
-  name: string
-): GenericLoadingHook<Contract> => {
-  const { loading: lpLoading, data: contracts } = useRole(LP_ROLE);
-  const { loading, data: contract } = useFetchWLPByName(name);
-
-  const [state, setState] = useState<NamedFetchHook>({
-    name: name,
+export const useFetchBackingLP = (
+  address: string | null
+): GenericLoadingHook<string> => {
+  const contract = useContract(address, ABIS[WLP_ROLE]);
+  const [state, setState] = useState<AddressFetchHook>({
     loading: true,
     data: null,
+    account: address,
   });
 
   useEffect(() => {
-    if (!loading && !lpLoading) {
-      if (!contract || !contracts)
+    if (!address || !contract) return;
+
+    contract.methods
+      ._lpToken()
+      .call()
+      .then((lpAddress: string) => {
         setState({
-          name: name,
           loading: false,
-          data: null,
+          data: lpAddress,
+          account: address,
         });
-      else
-        contract.methods
-          ._lpToken()
-          .call()
-          .then((address: string) => {
-            const filtered = contracts.filter(
-              (c) => c.options.address === address
-            );
-            if (filtered.length === 0)
-              setState({
-                name: name,
-                loading: false,
-                data: null,
-              });
-            else
-              setState({
-                name: name,
-                loading: false,
-                data: filtered[0],
-              });
+      });
+  }, [contract, address]);
+
+  return { loading: state.loading, data: state.data };
+};
+
+export const useFetchBackingTokens = (
+  address: string | null
+): GenericLoadingHook<LPBackingTokens> => {
+  const contract = useContract(address, ABIS[LP_ROLE]);
+  const [state, setState] = useState<LPBackingFetcherHook>({
+    loading: true,
+    data: { token0: null, token1: null },
+    address: address,
+  });
+
+  useEffect(() => {
+    if (!address || !contract) return;
+
+    contract.methods
+      .token0()
+      .call()
+      .then((address: string) => {
+        if (state.data?.token1)
+          setState({
+            loading: false,
+            data: { token0: address, token1: state.data.token1 },
+            address: address,
           });
-    }
-  }, [loading, lpLoading, contracts, contract, name]);
+        else
+          setState({
+            loading: true,
+            data: { token0: address, token1: null },
+            address: address,
+          });
+      });
+
+    contract.methods
+      .token1()
+      .call()
+      .then((address: string) => {
+        if (state.data?.token0)
+          setState({
+            loading: false,
+            data: { token0: state.data.token0, token1: address },
+            address: address,
+          });
+        else
+          setState({
+            loading: true,
+            data: { token0: null, token1: address },
+            address: address,
+          });
+      });
+  }, [contract, address]);
 
   return { loading: state.loading, data: state.data };
 };
 
 export const useFetchQuadBalance = (): GenericLoadingHook<string> => {
-  const { account, library, active } = useWeb3React<Web3>();
-  const { loading, data: contract } = useSingletonRole(TOKEN_ROLE);
+  const { loading: contractLoading, data: contract } = useSingletonRole(
+    TOKEN_ROLE
+  );
+
+  const { loading: balanceLoading, data: balance } = useFetchTokenBalance(
+    contract?.options.address as string | null
+  );
+
+  return { loading: contractLoading && balanceLoading, data: balance };
+};
+
+export const useFetchETHBalance = (): GenericLoadingHook<string> => {
+  const { library, active, account } = useWeb3React<Web3>();
 
   const [state, setState] = useState<AddressFetchHook>({
-    account: account as string,
     loading: true,
     data: null,
+    account: account,
   });
 
-  const updateBalanceState = useCallback(() => {
-    if (loading || !active || !contract || !account || !library) return;
+  useEffect(() => {
+    if (!active || !account || !library) return;
 
-    contract.methods.balanceOf(account).then((balance: BN) => {
+    library.eth.getBalance(account).then((balance: string) => {
       setState({
-        account: account,
         loading: false,
         data: library.utils.fromWei(balance, "ether"),
+        account: account,
       });
     });
-  }, [active, loading, library, account, contract]);
-
-  usePeriodicCall(updateBalanceState, 30000);
+  });
 
   return { loading: state.loading, data: state.data };
 };
@@ -131,38 +182,52 @@ export const useFetchQuadTotalSupply = (): GenericLoadingHook<string> => {
   useEffect(() => {
     if (!active || !library || loading || !contract) return;
 
-    contract.methods.totalSupply().then((totalSupply: BN) => {
-      setState({
-        loading: false,
-        data: library.utils.fromWei(totalSupply, "ether"),
+    contract.methods
+      .totalSupply()
+      .call()
+      .then((totalSupply: BN) => {
+        setState({
+          loading: false,
+          data: library.utils.fromWei(totalSupply, "ether"),
+        });
       });
-    });
   });
 
   return state;
 };
 
-export const useFetchWLPBalances = (
-  account: string | null
-): GenericLoadingHook<{ [x: string]: string }> => {
-  const { loading, data: contracts } = useRole(WLP_ROLE);
+export const useFetchTokenBalance = (
+  address: string | null
+): GenericLoadingHook<string> => {
+  const { active, library, account } = useWeb3React<Web3>();
+  const contract = useContract(address, ABIS[TOKEN_ROLE]);
 
-  const result = useFetchMultipleTokenBalances(contracts, account);
+  const [state, setState] = useState<AddressFetchHook>({
+    account: account,
+    loading: true,
+    data: null,
+  });
 
-  return { loading: loading || result.loading, data: result.data };
+  useEffect(() => {
+    if (!active || !contract || !account || !library) return;
+
+    contract.methods
+      .balanceOf(account)
+      .call()
+      .then((balance: BN) => {
+        setState({
+          account: account,
+          loading: false,
+          data: library.utils.fromWei(balance, "ether"),
+        });
+      });
+  }, [active, library, account, contract]);
+
+  return { loading: state.loading, data: state.data };
 };
 
-export const useFetchLPBalances = (
-  account: string | null
-): GenericLoadingHook<{ [x: string]: string }> => {
-  const { loading, data: contracts } = useRole(LP_ROLE);
-
-  const result = useFetchMultipleTokenBalances(contracts, account);
-
-  return { loading: loading || result.loading, data: result.data };
-};
-
-const useFetchMultipleTokenBalances = (
+//potentially useless, will remove later
+/*const useFetchMultipleTokenBalances = (
   contracts: Contract[] | null,
   account: string | null
 ): GenericLoadingHook<{ [x: string]: string }> => {
@@ -211,7 +276,7 @@ const useFetchMultipleTokenBalances = (
   usePeriodicCall(updateBalanceState, 30000);
 
   return { loading: state.loading, data: state.data };
-};
+};*/
 
 export const useApprove = (): GenericLoadingHook<
   (tokenAddress: string, spender: string) => Promise<TransactionReceipt>
@@ -244,16 +309,21 @@ export const useApprove = (): GenericLoadingHook<
   return { loading: !active, data: approve };
 };
 
-interface NamedFetchHook extends GenericLoadingHook<Contract> {
-  name: string;
-}
-
 interface AddressFetchHook extends GenericLoadingHook<string> {
-  account: string;
+  account: string | null | undefined;
 }
 
-interface MultiBalanceFetchHook
+interface LPBackingTokens {
+  token0: string | null;
+  token1: string | null;
+}
+
+interface LPBackingFetcherHook extends GenericLoadingHook<LPBackingTokens> {
+  address: string | null | undefined;
+}
+
+/*interface MultiBalanceFetchHook
   extends GenericLoadingHook<{ [x: string]: string }> {
   account: string | null;
   contracts: Contract[] | null;
-}
+}*/

@@ -3,9 +3,9 @@ import { TransactionReceipt } from "web3-core";
 import { useWeb3React } from "@web3-react/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ROLES, useSingletonRole } from "./quadResolver";
-import { usePeriodicCall, GenericLoadingHook } from "./reactUtils";
+import { GenericLoadingHook } from "./interfaces";
 import BN from "bn.js";
-import { useFetchWLPBalances } from "./quadTokensUtils";
+//import { useFetchWLPBalances } from "./quadTokensUtils";
 
 const VAULT_ROLE = ROLES["VAULT"];
 
@@ -22,11 +22,12 @@ export const useFetchUserData = (
     data: null,
   });
 
-  const updateStakedBalanceState = useCallback(() => {
+  useEffect(() => {
     if (loading || !active || !contract || !library || !account) return;
 
     contract.methods
       .getUserData(tokenAddress, account)
+      .call()
       .then((rawData: VaultUserDataRaw) => {
         const data: VaultUserData = {
           stakedAmount: library.utils.fromWei(rawData.stakedAmount, "ether"),
@@ -46,12 +47,12 @@ export const useFetchUserData = (
       });
   }, [account, active, tokenAddress, loading, library, contract]);
 
-  usePeriodicCall(updateStakedBalanceState, 30000);
+  //usePeriodicCall(updateStakedBalanceState, 30000);
 
   return { loading: state.loading, data: state.data };
 };
 
-export const useFetchTotalStakedTokens = (): GenericLoadingHook<{
+/*export const useFetchTotalStakedTokens = (): GenericLoadingHook<{
   [x: string]: string;
 }> => {
   const { loading, data: contract } = useSingletonRole(VAULT_ROLE);
@@ -62,7 +63,7 @@ export const useFetchTotalStakedTokens = (): GenericLoadingHook<{
 
   return { loading: balancesLoading && loading, data: balances };
 };
-
+*/
 export const useFetchFeeCurrentAnalyticIndex = (): GenericLoadingHook<
   number
 > => {
@@ -76,12 +77,15 @@ export const useFetchFeeCurrentAnalyticIndex = (): GenericLoadingHook<
   useEffect(() => {
     if (loading || !contract) return;
 
-    contract.methods.currentAnalyticIndex().then((index: BN) => {
-      setState({
-        loading: true,
-        data: index.toNumber(),
+    contract.methods
+      .currentAnalyticIndex()
+      .call()
+      .then((index: BN) => {
+        setState({
+          loading: true,
+          data: index.toNumber(),
+        });
       });
-    });
   }, [loading, contract]);
 
   return state;
@@ -101,11 +105,12 @@ export const useFetchMultipleAnalytics = (
     endIndex: endIndex,
   });
 
-  const getMultipleAnalytics = useCallback(() => {
+  useEffect(() => {
     if (loading || !active || !contract || !library) return;
 
     contract.methods
       .getMultipleAnalytics(startIndex, endIndex)
+      .call()
       .then((analyticRaw: FeeAnalyticRaw) => {
         const analytic: FeeAnalytic = {
           startBlock: analyticRaw.startBlock.toNumber(),
@@ -120,8 +125,6 @@ export const useFetchMultipleAnalytics = (
         });
       });
   }, [loading, active, contract, library, startIndex, endIndex]);
-
-  usePeriodicCall(getMultipleAnalytics, 30000);
 
   return { loading: state.loading, data: state.data };
 };

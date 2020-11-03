@@ -1,12 +1,12 @@
 import Web3 from "web3";
 import { TransactionReceipt } from "web3-core";
 import { useWeb3React } from "@web3-react/core";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { GenericLoadingHook } from "./interfaces";
 import { ROLES, useSingletonRole } from "./quadResolver";
-import { GenericLoadingHook, usePeriodicCall } from "./reactUtils";
-import BN from "bn.js";
 import { useFetchQuadTotalSupply } from "./quadTokensUtils";
 import { ETHPrice } from "../uniswap/uniswapDataFetcher";
+import BN from "bn.js";
 
 const LGE_ROLE = ROLES["LGE"];
 
@@ -20,7 +20,7 @@ export const useFetchTotalContributedETH = (): GenericLoadingHook<string> => {
     data: null,
   });
 
-  const updateBalanceState = useCallback(() => {
+  useEffect(() => {
     if (loading || !active || !contract || !library || !account) return;
     library.eth.getBalance(contract.options.address).then((balance) => {
       setState({
@@ -30,8 +30,6 @@ export const useFetchTotalContributedETH = (): GenericLoadingHook<string> => {
       });
     });
   }, [contract, account, loading, active, library]);
-
-  usePeriodicCall(updateBalanceState, 30000);
 
   return { loading: state.loading, data: state.data };
 };
@@ -46,7 +44,7 @@ export const useFetchUserContributedETH = (): GenericLoadingHook<string> => {
     data: null,
   });
 
-  const updateContributionsState = useCallback(() => {
+  useEffect(() => {
     if (loading || !active || !contract || !library || !account) return;
     contract.methods
       ._contributions(account)
@@ -59,8 +57,6 @@ export const useFetchUserContributedETH = (): GenericLoadingHook<string> => {
         });
       });
   }, [contract, account, loading, active, library]);
-
-  usePeriodicCall(updateContributionsState, 30000);
 
   return { loading: state.loading, data: state.data };
 };
