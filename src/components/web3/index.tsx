@@ -1,8 +1,10 @@
 import React from "react";
 import Web3 from "web3";
+import "./style.css";
 import { provider } from "web3-core";
 import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
+import "../../quad-libs/quad-ecosystem/quadResolver";
 
 const injectedConnector = new InjectedConnector({
   supportedChainIds: [
@@ -29,18 +31,13 @@ export const ChainIntegration = () => {
   };
 
   return (
-    <div>
+    <div className="connect-wrap">
       {active ? (
-        <div>
-          {
-            //do something when metamask is connected
-            account
-          }
-        </div>
+        "Connecting..."
       ) : (
-        <button type="button" onClick={onClick}>
-          Connect with metamask
-        </button>
+        <a className="connect" onClick={onClick}>
+          Connect to metamask
+        </a>
       )}
     </div>
   );

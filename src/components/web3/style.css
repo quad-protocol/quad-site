@@ -1,0 +1,23 @@
+.connect-wrap {
+  font-family: "Amiga";
+  width: 90%;
+  height: 90%;
+  background-color: rgb(40, 27, 46);
+  color: rgb(237, 152, 150);
+  border-radius: 5px;
+  overflow: hidden;
+  font-size: 1rem;
+  position: relative;
+}
+.connect {
+  color: rgb(40, 27, 46);
+  background-color: rgb(237, 152, 150);
+  text-align: center;
+  padding: 0.25rem 1rem;
+  display: block;
+  width: 350px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+}
