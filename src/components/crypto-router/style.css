@@ -6,7 +6,7 @@
   color: rgb(237, 152, 150);
   border-radius: 5px;
   animation: createBox 0.25s;
-  overflow: scroll;
+  overflow-y: scroll;
   font-size: 1rem;
 }
 .header {

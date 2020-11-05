@@ -9,7 +9,8 @@ import { ChainIntegration } from "../web3";
 
 interface ProcessorState {
   showRouter: boolean;
-  chosenRouter: string;
+  tokenAddress: string;
+  tokenName: string;
 }
 
 export const Processor = (props: any) => {
@@ -17,21 +18,24 @@ export const Processor = (props: any) => {
   const { loading: loadingAddresses, data: addresses } = useFetchWLPAddresses();
   const [state, setState] = useState<ProcessorState>({
     showRouter: false,
-    chosenRouter: "",
+    tokenAddress: "",
+    tokenName: "",
   });
 
-  const { showRouter, chosenRouter } = state;
+  const { showRouter, tokenAddress, tokenName } = state;
 
-  const openRouter = (router: string) => {
+  const openRouter = (tokenAddress: string, tokenName: string) => {
     setState({
       showRouter: true,
-      chosenRouter: router,
+      tokenAddress: tokenAddress,
+      tokenName: tokenName,
     });
   };
   const closeRouter = () => {
     setState({
       showRouter: false,
-      chosenRouter: "",
+      tokenAddress: "",
+      tokenName: "",
     });
   };
 
@@ -42,12 +46,13 @@ export const Processor = (props: any) => {
           showRouter ? (
             <CryptoRouter
               close={closeRouter}
-              tokenAddress={chosenRouter}
+              tokenAddress={tokenAddress}
+              tokenName={tokenName}
             ></CryptoRouter>
           ) : !loadingAddresses && addresses ? (
             <div className="box-wrap">
               {addresses.map((a) => (
-                <Core open={() => openRouter(a)}></Core>
+                <Core open={openRouter} tokenAddress={a}></Core>
               ))}
             </div>
           ) : (

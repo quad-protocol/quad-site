@@ -1,8 +1,7 @@
 import Web3 from "web3";
 import { TransactionReceipt } from "web3-core";
-import { Contract } from "web3-eth-contract";
 import { useWeb3React } from "@web3-react/core";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ROLES,
   useRole,
@@ -25,27 +24,28 @@ export const useFetchWLPAddresses = (): GenericLoadingHook<string[]> => {
   return { loading: false, data: data.map((c) => c.options.address) };
 };
 
-export const useFetchTokenName = (
+export const useFetchTokenSymbol = (
   address: string | null
 ): GenericLoadingHook<string> => {
   const contract = useContract(address, ABIS[TOKEN_ROLE]);
+
   const [state, setState] = useState<AddressFetchHook>({
+    account: address,
     loading: true,
     data: null,
-    account: address,
   });
 
   useEffect(() => {
-    if (!address || !contract) return;
+    if (!address || !contract || !state.loading) return;
 
     contract.methods
-      .name()
+      .symbol()
       .call()
       .then((name: string) => {
         setState({
+          account: address,
           loading: false,
           data: name,
-          account: address,
         });
       });
   }, [contract, address]);

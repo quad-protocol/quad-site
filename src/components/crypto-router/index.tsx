@@ -3,11 +3,8 @@ import Web3 from "web3";
 import "./style.css";
 import { InputField } from "../input-field";
 import {
-  useFetchBackingLP,
-  useFetchBackingTokens,
   useFetchETHBalance,
   useFetchTokenBalance,
-  useFetchTokenName,
 } from "../../quad-libs/quad-ecosystem/quadTokensUtils";
 import { useWeb3React } from "@web3-react/core";
 import { useFetchUserData } from "../../quad-libs/quad-ecosystem/quadVault";
@@ -15,18 +12,11 @@ import { useFetchUserData } from "../../quad-libs/quad-ecosystem/quadVault";
 interface RouterProps {
   close: () => void;
   tokenAddress: string;
+  tokenName: string;
 }
 
 export const CryptoRouter = (props: RouterProps) => {
   const { active } = useWeb3React<Web3>();
-  const { data: lpAddress } = useFetchBackingLP(props.tokenAddress);
-  const { data: tokens } = useFetchBackingTokens(lpAddress);
-  const { loading: token0Loading, data: token0Name } = useFetchTokenName(
-    tokens?.token0 ? tokens.token0 : null
-  );
-  const { loading: token1Loading, data: token1Name } = useFetchTokenName(
-    tokens?.token1 ? tokens.token1 : null
-  );
   const { loading: ethBalanceLoading, data: ethBalance } = useFetchETHBalance();
   const { loading: lpBalanceLoading, data: lpBalance } = useFetchTokenBalance(
     props.tokenAddress
@@ -39,15 +29,13 @@ export const CryptoRouter = (props: RouterProps) => {
     <div className="router-wrap">
       <div className="header">
         <div className="header-text">
-          {token0Loading && token1Loading
-            ? "Loading..."
-            : token0Name + "/" + token1Name}
+          {"QUAD/" + (props.tokenName == "WETH" ? "ETH" : props.tokenName)}
         </div>
         <a onClick={props.close} className="header-button">
           X
         </a>
       </div>
-      <div>GET LPs</div>
+      <div>GET W.LPs</div>
       <div className="insert-coin">
         <div className="section">
           <InputField></InputField>
@@ -59,7 +47,7 @@ export const CryptoRouter = (props: RouterProps) => {
                 : "Total in wallet: " + ethBalance
               : "Please connect to metamask"}
           </div>
-          <a className="swap">SWAP FOR W.LPs</a>
+          <a className="swap">SWAP ETH</a>
         </div>
       </div>
       <div>STAKE</div>

@@ -17,7 +17,26 @@
   display: block;
   width: 350px;
   left: 50%;
-  top: 50%;
+  top: 70%;
   transform: translate(-50%, -50%);
   position: absolute;
+}
+
+.no-metamask {
+  text-align: center;
+  padding: 0.25rem 1rem;
+  display: block;
+  width: 350px;
+  left: 50%;
+  top: 70%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+}
+
+.metamask-logo {
+  position: absolute;
+  width: 40%;
+  height: 40%;
+  transform: translate(-50%, -50%);
+  top: 30%;
 }

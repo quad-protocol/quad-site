@@ -4,7 +4,7 @@ import "./style.css";
 import { provider } from "web3-core";
 import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
-import "../../quad-libs/quad-ecosystem/quadResolver";
+import metamask_logo from "../../images/metamask_logo.png";
 
 const injectedConnector = new InjectedConnector({
   supportedChainIds: [
@@ -18,13 +18,9 @@ export const getLibrary = (provider: provider) => {
 };
 
 export const ChainIntegration = () => {
-  const { account, activate, active } = useWeb3React();
+  const { activate, active } = useWeb3React();
 
   //Typescript doesn't expect window.ethereum to be a thing. Just ignore it.
-  //@ts-ignore
-  if (!window.ethereum)
-    //No metamask installed. To be handled properly.
-    return <div>Please install metamask</div>;
 
   const onClick = () => {
     activate(injectedConnector);
@@ -32,13 +28,21 @@ export const ChainIntegration = () => {
 
   return (
     <div className="connect-wrap">
-      {active ? (
-        "Connecting..."
-      ) : (
-        <a className="connect" onClick={onClick}>
-          Connect to metamask
-        </a>
-      )}
+      <img src={metamask_logo} className="metamask-logo" />
+      {
+        //@ts-ignore
+        window.ethereum ? (
+          active ? (
+            "Connecting..."
+          ) : (
+            <a className="connect" onClick={onClick}>
+              Connect to metamask
+            </a>
+          )
+        ) : (
+          <div className="no-metamask">Please install metamask</div>
+        )
+      }
     </div>
   );
 };
