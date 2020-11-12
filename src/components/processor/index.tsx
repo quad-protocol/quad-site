@@ -14,8 +14,10 @@ interface ProcessorState {
 }
 
 export const Processor = (props: any) => {
-  const { active } = useWeb3React<Web3>();
+  const { active, error } = useWeb3React<Web3>();
+  console.log(error);
   const { loading: loadingAddresses, data: addresses } = useFetchWLPAddresses();
+  console.log(active, loadingAddresses);
   const [state, setState] = useState<ProcessorState>({
     showRouter: false,
     tokenAddress: "",

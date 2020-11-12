@@ -1,4 +1,5 @@
 .router-wrap {
+  user-select: none;
   font-family: "Amiga";
   width: 90%;
   height: 90%;

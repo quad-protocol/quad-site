@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Web3 from "web3";
 import "./style.css";
 import { InputField } from "../input-field";
@@ -25,6 +25,18 @@ export const CryptoRouter = (props: RouterProps) => {
     props.tokenAddress
   );
 
+  const [tokensToDeposit, setTokensToDeposit] = useState("");
+  const updateTokenToDeposit = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let re = new RegExp(event.target.pattern);
+    if (re.test(event.target.value)) {
+      setTokensToDeposit(event.target.value);
+    }
+  };
+  const maxTokensToDeposit = () => {
+    if (ethBalance) {
+      setTokensToDeposit(ethBalance);
+    }
+  };
   return (
     <div className="router-wrap">
       <div className="header">
@@ -38,8 +50,16 @@ export const CryptoRouter = (props: RouterProps) => {
       <div>GET W.LPs</div>
       <div className="insert-coin">
         <div className="section">
-          <InputField></InputField>
-          <input type="submit" value="MAX" className="max-button"></input>
+          <InputField
+            value={tokensToDeposit}
+            updateNumber={updateTokenToDeposit}
+          ></InputField>
+          <input
+            type="submit"
+            onClick={maxTokensToDeposit}
+            value="MAX"
+            className="max-button"
+          ></input>
           <div className="subtext">
             {active
               ? ethBalanceLoading
@@ -53,7 +73,6 @@ export const CryptoRouter = (props: RouterProps) => {
       <div>STAKE</div>
       <div className="insert-coin">
         <div className="section">
-          <InputField></InputField>
           <input type="submit" value="MAX" className="max-button"></input>
           <div className="subtext">
             {active
@@ -70,7 +89,6 @@ export const CryptoRouter = (props: RouterProps) => {
       <div>UNSTAKE</div>
       <div className="insert-coin">
         <div className="section">
-          <InputField></InputField>
           <input type="submit" value="MAX" className="max-button"></input>
           <div className="subtext">
             {active
